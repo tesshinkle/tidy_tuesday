@@ -67,12 +67,25 @@ gouldian_weather_data = ecotourism_data |>
   select(temp, dewp, rh, prcp, wind_speed, organism_name) |>
   filter(organism_name == "Gouldian finch")
 
-gouldian_weather_data |>
-  filter(organism_name == "Gouldian finch") |>
+#correlation matrix of numeric columns
+cor( gouldian_weather_data[ ,c(1:5) ], use = "complete.obs" )
+
+gouldian_weather_data |> 
   ggplot(aes(prcp)) +
   geom_density()
 
-gouldian_weather_data |>
-  filter(organism_name == "Gouldian finch") |>
+gouldian_weather_data |> 
   ggplot(aes(wind_speed)) +
-  geom_density() + geom_boxplot()
+  geom_density() 
+
+gouldian_weather_data |> 
+  ggplot(aes(temp)) +
+  geom_density()
+
+gouldian_weather_data |> 
+  ggplot(aes(dewp)) +
+  geom_density()
+
+
+
+    
