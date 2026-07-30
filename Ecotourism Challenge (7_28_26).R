@@ -8,6 +8,9 @@
 require(tidytuesdayR)
 library(tidyverse)
 require(ecotourism)
+require(mosaic)
+
+theme_set(theme_bw())
 
 tuesdata = tidytuesdayR::tt_load('2026-07-28')
 
@@ -51,3 +54,25 @@ ecotourism_data = right_join(weather, occurrences, by = c("ws_id", "date", "year
 str(ecotourism_data)
 summary(ecotourism_data)
 
+#looking at the weather that gouldian finches are most often observed
+favstats(temp~organism_name, data = ecotourism_data)
+favstats(dewp~organism_name, data = ecotourism_data)
+favstats(rh~organism_name, data = ecotourism_data)
+favstats(prcp~organism_name, data = ecotourism_data)
+favstats(wind_speed~organism_name, data = ecotourism_data)
+
+#sleceting just the weather columns and the organism name
+
+gouldian_weather_data = ecotourism_data |>
+  select(temp, dewp, rh, prcp, wind_speed, organism_name) |>
+  filter(organism_name == "Gouldian finch")
+
+gouldian_weather_data |>
+  filter(organism_name == "Gouldian finch") |>
+  ggplot(aes(prcp)) +
+  geom_density()
+
+gouldian_weather_data |>
+  filter(organism_name == "Gouldian finch") |>
+  ggplot(aes(wind_speed)) +
+  geom_density() + geom_boxplot()
