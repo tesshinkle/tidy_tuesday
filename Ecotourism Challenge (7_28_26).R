@@ -1,5 +1,9 @@
 #Tidy Tuesday Challenge 7/28/2026
 #Ecoturism
+#Challenge questions
+## Under which weather conditions are you most likely to observe a Gouldian finch?
+## How does weather affect tourism numbers in each region?
+## How do observations of the different animals relate to numbers of tourists?
 
 require(tidytuesdayR)
 library(tidyverse)
@@ -38,4 +42,12 @@ tourism = ecotourism::tourism_quarterly |>
   select(-ws_id.y)
 
 #the three data sets can be joined by ws_id
+
+ecotourism_data = right_join(weather, occurrences, by = c("ws_id", "date", "year",
+                                                          "month", "day", "weekday", "dayofyear"),
+                             relationship = "many-to-many")
+
+#simple statisitcs
+str(ecotourism_data)
+summary(ecotourism_data)
 
