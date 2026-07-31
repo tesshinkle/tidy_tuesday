@@ -61,6 +61,9 @@ favstats(rh~organism_name, data = ecotourism_data)
 favstats(prcp~organism_name, data = ecotourism_data)
 favstats(wind_speed~organism_name, data = ecotourism_data)
 
+
+#Looking at Question 1 ----
+## Under which weather conditions are you most likely to observe a Gouldian finch?
 #sleceting just the weather columns and the organism name
 
 gouldian_weather_data = ecotourism_data |>
@@ -94,8 +97,28 @@ ggplot(gouldian_weather_data) +
   geom_density(aes(prcp, fill = "Precipitation"), alpha = 0.5) +
   theme(legend.position = "bottom") + labs(x = " ")
 
-#looking at scatterplots
-gouldian_weather_data |>
-  ggplot(aes(x = temp, y = dewp)) +
-  geom_point(alpha = 0.5)
-    
+
+# Looking at Question 2 ----
+## How does weather affect tourism numbers in each region?
+
+#combining the tourism and weather data sets
+
+tourism_weather_data = right_join(weather, tourism, by = c("ws_id", "year"),
+                             relationship = "many-to-many")
+
+require(scales)
+
+tourism_weather_data |>
+  group_by(quarter, purpose) |>
+  summarize(
+    freq = n(), 
+    joint = n() / nrow(tourism_weather_data)
+  ) |> 
+  ggplot(aes(x = quarter, y = purpose)) +
+  geom_tile(aes(fill = freq), color = "white") +
+  geom_text(aes(label = scales::percent(joint, accuracy = 0.01))) +
+  scale_fill_gradient2() +
+  coord_equal() +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45,
+                                   vjust = 1, hjust = 1))
