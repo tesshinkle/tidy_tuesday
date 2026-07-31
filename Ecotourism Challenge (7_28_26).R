@@ -86,6 +86,16 @@ gouldian_weather_data |>
   ggplot(aes(dewp)) +
   geom_density()
 
+#trying to get density plots all together
+ggplot(gouldian_weather_data) +
+  geom_density(aes(temp, fill = "Temperature"), alpha = 0.5) +
+  geom_density(aes(wind_speed, fill = "Wind Speed"), alpha = 0.5) +
+  geom_density(aes(dewp, fill = "Dewpoint"), alpha = 0.5) +
+  geom_density(aes(prcp, fill = "Precipitation"), alpha = 0.5) +
+  theme(legend.position = "bottom") + labs(x = " ")
 
-
+#looking at scatterplots
+gouldian_weather_data |>
+  ggplot(aes(x = temp, y = dewp)) +
+  geom_point(alpha = 0.5)
     
