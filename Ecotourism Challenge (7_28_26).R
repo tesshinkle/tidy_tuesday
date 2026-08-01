@@ -122,3 +122,14 @@ tourism_weather_data |>
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45,
                                    vjust = 1, hjust = 1))
+
+
+
+# Question three ----
+## How do observations of the different animals relate to numbers of tourists?
+
+# joining the occurrences and tourism data together
+
+#observation_data = right_join(occurrences, tourism, by = c("ws_id"), relationship = "many-to-many")
+
+                              
