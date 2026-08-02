@@ -104,12 +104,13 @@ ggplot(gouldian_weather_data) +
 #combining the tourism and weather data sets
 
 tourism_weather_data = right_join(weather, tourism, by = c("ws_id", "year"),
-                             relationship = "many-to-many")
+                             relationship = "many-to-many") |>
+  mutate(rainy = as.factor(rainy))
 
 require(scales)
 
 tourism_weather_data |>
-  group_by(quarter, purpose) |>
+  group_by(region, purpose) |>
   summarize(
     freq = n(), 
     joint = n() / nrow(tourism_weather_data)
@@ -122,6 +123,40 @@ tourism_weather_data |>
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45,
                                    vjust = 1, hjust = 1))
+  
+  
+data = tourism_weather_data |>
+  group_by(region, purpose, rainy, quarter) |>
+  summarize(total_trips = sum(trips, na.rm = TRUE),
+    avg_temp = mean(temp, na.rm = TRUE),
+    .groups = "drop") |>
+  drop_na() |>
+  filter(rainy != "NaN")
+
+data |>
+  ggplot(aes( x = avg_temp, y = total_trips, colour = rainy)) +
+  geom_point(position = "jitter", alpha = 0.5, size = 3) +
+  facet_grid(. ~ quarter) +
+  scale_color_manual(values = c( "1" = "#7189e9" , "0" = "#f8a5b6" )) +
+  guides(colour = guide_legend(override.aes = list(alpha = 1))) +
+  labs(x = "Average Temperature (Degrees Celsius)", y = "Total Trips")
+
+
+
+favstats(trips~month, data = tourism_weather_data)
+
+prop.table(table(tourism_weather_data$rainy,
+                 tourism_weather_data$purpose), margin = 2)
+
+round(prop.table(table(tourism_weather_data$rainy,
+                       tourism_weather_data$purpose,
+                       tourism_weather_data$quarter), margin = c(2,3)),  3)
+
+tourism_weather_data |> 
+  drop_na(rainy) |>
+  ggplot(aes(x = purpose , fill = rainy)) +
+  geom_bar() +
+  facet_wrap(. ~ quarter)
 
 
 
