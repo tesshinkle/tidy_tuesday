@@ -98,7 +98,7 @@ ggplot(gouldian_weather_data) +
   theme(legend.position = "bottom") + labs(x = " ")
 
 
-# Looking at Question 2 ----
+#Looking at Question 2 ----
 ## How does weather affect tourism numbers in each region?
 
 #combining the tourism and weather data sets
@@ -160,11 +160,27 @@ tourism_weather_data |>
 
 
 
-# Question three ----
+#Looking at Question three ----
 ## How do observations of the different animals relate to numbers of tourists?
 
 # joining the occurrences and tourism data together
 
-#observation_data = right_join(occurrences, tourism, by = c("ws_id"), relationship = "many-to-many")
+tourist_obsv_data = right_join(occurrences, tourism, by = c("ws_id", "year"), relationship = "many-to-many") |>
+  mutate(record_type = as.factor(record_type)) |>
+  group_by(obs_state, record_type, organism_name) |>
+  summarize(total_trips = sum(trips, na.rm = TRUE), 
+            total_obsv = n(),
+            .groups = "drop") |>
+  drop_na()
 
-                              
+tourist_obsv_data |>
+  filter(record_type == "HUMAN_OBSERVATION" ) |>
+  ggplot(aes(x = total_trips, y = total_obsv, colour = organism_name)) +
+  geom_point(size = 4, alpha = 0.7) +
+  facet_zoom(xlim = c(0,5000), ylim = c(0, 1000), horizontal = FALSE) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  labs(x = "Total Trips", y = "Total Species Observations", color = "Organism Name")+
+  scale_color_manual(values = c( "Glowworm" = "#7189e9" , "Gouldian finch" = "#f8a5b6",
+                                 "Manta ray" = "#b5a9a6" , "Orchid" = "#a582d2"))
+
+                          
