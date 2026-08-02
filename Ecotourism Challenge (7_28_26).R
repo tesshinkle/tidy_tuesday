@@ -9,6 +9,7 @@ require(tidytuesdayR)
 library(tidyverse)
 require(ecotourism)
 require(mosaic)
+require(ggforce)
 
 theme_set(theme_bw())
 
