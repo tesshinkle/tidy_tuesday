@@ -158,3 +158,28 @@ winter_data |>
 
 # Looking at Question 2----
 ##Which country imports the most Basotho wool at time on average?
+
+country_data = basotho_wool |>
+  group_by(ref_month, reporter_desc) |>
+  summarize(avg_net_wgt = mean(net_wgt)) |>
+  mutate(ref_month = as.factor(ref_month))
+
+yearly_country_data = basotho_wool |>
+  group_by(ref_year, reporter_desc) |>
+  summarize(avg_net_wgt = mean(net_wgt))|>
+  mutate(ref_year = as.factor(ref_year))
+
+country_data |>
+  ggplot(aes(x= ref_month, y = avg_net_wgt, fill = reporter_desc)) +
+  geom_col(alpha = 0.7) +
+  scale_fill_brewer(palette = "Dark2") +
+  guides(fill = guide_legend(override.aes = list(alpha = 1))) +
+  labs(x = "Month", y = "Average Net Weight of Traded Commodity (kg)", fill = "Country")
+
+yearly_country_data |>
+  ggplot(aes(x= ref_year, y = avg_net_wgt, fill = reporter_desc)) +
+  geom_col(alpha = 0.7) +
+  scale_fill_brewer(palette = "Dark2") +
+  guides(fill = guide_legend(override.aes = list(alpha = 1))) +
+  labs(x = "Year", y = "Average Net Weight of Traded Commodity (kg)", fill = "Country") +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
