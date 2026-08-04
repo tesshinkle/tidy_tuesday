@@ -78,15 +78,28 @@ winter_data = basotho_wool |>
                                 ref_month == "10" ~ "October",
                                 ref_month == "11" ~ "November",
                                 ref_month == "12" ~ "December")) |>
-  mutate(month_desc = as.factor(month_desc))
+  mutate(month_desc = as.factor(month_desc)) |>
+  mutate(quarter = case_when(ref_month == "1" ~ "1", 
+                             ref_month == "2" ~ "1",
+                             ref_month == "3" ~ "1", 
+                             ref_month == "4"~ "2",
+                             ref_month == "5" ~ "2", 
+                             ref_month == "6" ~ "2",
+                             ref_month == "7" ~ "3",
+                             ref_month == "8" ~ "3",
+                             ref_month == "9" ~ "3",
+                             ref_month == "10" ~ "4",
+                             ref_month == "11" ~ "4",
+                             ref_month == "12" ~ "4")) |>
+  mutate(quarter = as.factor(quarter))
 
-winter_data |>
+wgt_boxplot = winter_data |>
   ggplot(aes(y = net_wgt, x = reorder(month_desc, ref_month), fill = month_desc)) +
   geom_boxplot() +
   theme(axis.text.x = element_text(angle = 50, vjust = 1, hjust = 1), legend.position = "none") +
   labs(x = "Month", y = "Net Weight (kg)")
 
-winter_data |>
+val_boxplot = winter_data |>
   ggplot(aes(y = primary_value, x = reorder(month_desc, ref_month), fill = month_desc)) +
   geom_boxplot() +
   theme(axis.text.x = element_text(angle = 50, vjust = 1, hjust = 1), legend.position = "none") +
@@ -94,9 +107,54 @@ winter_data |>
 
 require(ggbeeswarm)
 
+wgt_beeswarm = winter_data |>
+  ggplot(aes(y = net_wgt, x = reorder(month_desc, ref_month))) +
+  geom_beeswarm( cex = 1, size = 1.5, alpha = 0.5, aes(color = month_desc)) +
+  theme(axis.text.x = element_text(angle = 50, vjust = 1, hjust = 1), legend.position = "none") +
+  labs(x = "Month", y = "Net Weight (kg)")
 
-winter_data |>
+val_beeswarm = winter_data |>
   ggplot(aes(y = primary_value, x = reorder(month_desc, ref_month))) +
   geom_beeswarm( cex = 1, size = 1.5, alpha = 0.5, aes(color = month_desc)) +
   theme(axis.text.x = element_text(angle = 50, vjust = 1, hjust = 1), legend.position = "none") +
   labs(x = "Month", y = "Value of commodity (USD)")
+
+require(patchwork)
+wgt_boxplot + val_boxplot
+
+wgt_beeswarm + val_beeswarm
+
+wgt_plots = wgt_boxplot + wgt_beeswarm
+
+val_plots = val_boxplot + val_beeswarm
+
+#scatterplot of value and netweight colored by quarter
+# We can see that quarter three has the lowest overall primary value and net weight 
+# Quarter One and Two appear to have similar max value of commodity however 
+##quarter one has the highest net weight which could be due to quarter two 
+##having june (one of the winter months)
+# Quarter four appears to be the best performing in the value of the commodity 
+##and nearly matches quarter one in net weight
+
+winter_data |>
+  ggplot(aes(x= primary_value, y = net_wgt, color = quarter)) +
+  geom_point(alpha = 0.3, size = 3) +
+  geom_line(linewidth = 1, alpha = 0.3)+
+  theme(legend.position = "bottom") +
+  scale_colour_brewer(palette = "Set1")
+
+
+#faceting the scatterplot of value of commodity and net weight by 
+#month of the year then coloring them by quarter
+winter_data |>
+  ggplot(aes(x= primary_value, y = net_wgt, color = quarter)) +
+  geom_point(alpha = 0.3, size = 3) +
+  geom_line(linewidth = 1, alpha = 0.3)+
+  coord_cartesian() +
+  facet_wrap(.~reorder(month_desc, ref_month), ncol = 3) +
+  theme(legend.position = "bottom") +
+  scale_colour_brewer(palette = "Set1")
+
+
+# Looking at Question 2----
+##Which country imports the most Basotho wool at time on average?
