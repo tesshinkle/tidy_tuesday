@@ -58,3 +58,45 @@ basotho_wool_plot <- basotho_wool_2023 |>
     legend.position = "none" 
   )
 basotho_wool_plot
+
+
+#Looking at Question 1----
+#Does Winter (being in the Southern hemisphere, these are the months June, July and August) 
+#impact Basotho wool quantity/volume exported and revenue?
+
+winter_data = basotho_wool |>
+  select(ref_year, ref_month, reporter_desc, net_wgt, primary_value) |>
+  mutate(month_desc = case_when(ref_month == "1" ~ "January", 
+                                ref_month == "2" ~ "February",
+                                ref_month == "3" ~ "March", 
+                                ref_month == "4"~ "April",
+                                ref_month == "5" ~ "May", 
+                                ref_month == "6" ~ "June",
+                                ref_month == "7" ~ "July",
+                                ref_month == "8" ~ "August",
+                                ref_month == "9" ~ "September",
+                                ref_month == "10" ~ "October",
+                                ref_month == "11" ~ "November",
+                                ref_month == "12" ~ "December")) |>
+  mutate(month_desc = as.factor(month_desc))
+
+winter_data |>
+  ggplot(aes(y = net_wgt, x = reorder(month_desc, ref_month), fill = month_desc)) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 50, vjust = 1, hjust = 1), legend.position = "none") +
+  labs(x = "Month", y = "Net Weight (kg)")
+
+winter_data |>
+  ggplot(aes(y = primary_value, x = reorder(month_desc, ref_month), fill = month_desc)) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 50, vjust = 1, hjust = 1), legend.position = "none") +
+  labs(x = "Month", y = "Value of commodity (USD)")
+
+require(ggbeeswarm)
+
+
+winter_data |>
+  ggplot(aes(y = primary_value, x = reorder(month_desc, ref_month))) +
+  geom_beeswarm( cex = 1, size = 1.5, alpha = 0.5, aes(color = month_desc)) +
+  theme(axis.text.x = element_text(angle = 50, vjust = 1, hjust = 1), legend.position = "none") +
+  labs(x = "Month", y = "Value of commodity (USD)")
